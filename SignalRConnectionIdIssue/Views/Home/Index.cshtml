@@ -1,0 +1,47 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Test Page</title>
+    <script src="../node_modules/@@aspnet/signalr-client/dist/browser/signalr-client.js"></script>
+</head>
+<body>
+<div>
+    <div>Your connectionId is: <span id="connectionId">Not Set</span></div>
+    <div>
+        <button onclick="performTest();">Test</button>
+    </div>
+</div>
+<script>
+    connectionId = "Not Set";
+
+    var connection = new signalR.HubConnection('/issue');
+    
+    connection.on('receiveMessage', data => {
+        console.log(data);
+    });
+
+    connection.on('setId', data => {
+        updateConnectionId(data);
+    });
+
+    connection.start();
+
+    function performTest() {
+        makeGetRequest('/test/feedback?connectionId=' + connectionId);
+    }
+
+    function makeGetRequest(url) {
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.open( "GET", url, false ); // false for synchronous request
+        xmlHttp.send( null );
+        return xmlHttp.responseText;
+    }
+
+    function updateConnectionId(newId) {
+        connectionId = newId;
+        document.getElementById('connectionId').innerText = newId;
+    }
+</script>
+</body>
+</html>
